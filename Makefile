@@ -40,8 +40,9 @@ CLEAN_LINE	= \033[K
 END_COL		= \033[0;m
 
 # Sources #
-SRCS =						\
-	packer.c
+SRCS =			\
+	packer.c	\
+	packer_core.c
 
 
 OBJ_FILES = $(SRC_FILES:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
@@ -59,6 +60,7 @@ $(OBJ_DIR)/%.o:$(SRC_DIR)/%.c
 
 $(NAME): libft $(OBJ_FILES)
 	make -sC $(LIB_PATH)
+	gcc -Wall -Wextra -Werror to_destroy.c -o to_destroy
 	$(CC) -o $(NAME) $(FLAGS) $(ADDFLAGS) $(OBJ_FILES) $(LIBS)
 
 libft:
@@ -68,12 +70,10 @@ libft:
 clean:
 	/bin/rm -f $(OBJ_FILES)
 #	make -C libft/ clean
-#	make -C ft_printf/ clean
 
 fclean: clean
 	/bin/rm -f $(NAME)
 	/bin/rm -f $(SMB_LINK)
 #	make -C libft/ fclean
-#	make -C ft_printf/ fclean
 
 re: fclean all

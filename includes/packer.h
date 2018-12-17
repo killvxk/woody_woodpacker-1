@@ -11,12 +11,14 @@
 # include <sys/types.h>
 # include <unistd.h>
 
+# include <elf.h>
 
 # define SUCCESS 0
 # define ERROR -1
 
 typedef struct	s_packer
 {
+  int		fd;
   unsigned int	offset;
   unsigned int	filesize;
   void		*mapped;
@@ -25,5 +27,7 @@ typedef struct	s_packer
 }		t_packer;
 
 int	packer(int ac, char **av);
+int	packer_core(t_packer *pack);
+
 
 #endif

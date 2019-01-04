@@ -6,7 +6,7 @@
 #    By: ddinaut <marvin@42.fr>                     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/02/26 16:31:33 by ddinaut           #+#    #+#              #
-#    Updated: 2018/12/09 16:16:50 by ddinaut          ###   ########.fr        #
+#    Updated: 2019/01/04 15:09:55 by ddinaut          ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -21,8 +21,10 @@ ADDFLAGS	= #-fsanitize=address
 # Directories
 OBJ_DIR		= .obj
 SRC_DIR		= srcs
+ASM_DIR		= $(SRC_DIR)/asm
 INC_DIR		= includes/
 LIB_PATH	= libft
+OUTPUT_DIR	= bin
 
 LIBFT		= -L $(LIB_PATH)
 LIBS		= $(LIBFT) -lft $(libft)
@@ -40,14 +42,16 @@ CLEAN_LINE	= \033[K
 END_COL		= \033[0;m
 
 # Sources #
-SRCS =			\
-	packer.c	\
-	packer_core.c
-
+SRCS =				\
+	packer.c		\
+	packer_core.c	\
+	elf.c			\
+	infection_x32.c	\
+	infection_x64.c	\
+	error.c
 
 OBJ_FILES = $(SRC_FILES:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 SRC_FILES = $(addprefix $(SRC_DIR)/,$(SRCS))
-
 # Rules #
 .PHONY: all clean fclean re libft
 
@@ -57,23 +61,23 @@ $(OBJ_DIR)/%.o:$(SRC_DIR)/%.c
 	mkdir -p $(dir $@)
 	$(CC) -o $@ $(FLAGS) $(ADDFLAGS) $(INCLUDES) -c $<
 
-
-$(NAME): libft $(OBJ_FILES)
-	make -sC $(LIB_PATH)
-	gcc -Wall -Wextra -Werror to_destroy.c -o to_destroy
-	$(CC) -o $(NAME) $(FLAGS) $(ADDFLAGS) $(OBJ_FILES) $(LIBS)
+$(NAME): libft binaries $(OBJ_FILES)
+	$(CC) -o $(OUTPUT_DIR)/$(NAME) $(FLAGS) $(ADDFLAGS) $(OBJ_FILES) $(LIBS)
 
 libft:
-	@printf "[Compiling libft] :\n"
 	make -C libft/
+
+binaries:
+	gcc $(FLAGS) srcs/infect.c -o $(OUTPUT_DIR)/target
+	nasm -f elf64 $(ASM_DIR)/print.s -o $(ASM_DIR)print.o
+	ld -m elf_x86_64 $(ASM_DIR)/print.o -o $(OUTPUT_DIR)/print
 
 clean:
 	/bin/rm -f $(OBJ_FILES)
-#	make -C libft/ clean
+	make -C libft/ clean
 
 fclean: clean
 	/bin/rm -f $(NAME)
-	/bin/rm -f $(SMB_LINK)
-#	make -C libft/ fclean
+	make -C libft/ fclean
 
 re: fclean all

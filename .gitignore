@@ -57,3 +57,6 @@ packer
 libft
 to_destroy
 woody
+.gdb_history
+peda-session*
+bin

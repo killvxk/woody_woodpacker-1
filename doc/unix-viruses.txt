@@ -205,14 +205,14 @@ later in this article.
 
 THE EXECUTABLE AND LINKAGE FORMAT
 
-A more complete ELF executable layout is (ignoring section content - see 
+A more complete ELF executable layout is (ignoring section content - see
 below).
 
 	ELF Header
 	Program header table
 	Segment 1
 	Segment 2
-	Section header table optional	
+	Section header table optional
 
 In practice, this is what is normally seen.
 
@@ -302,7 +302,7 @@ the program header table.
 It can also be seen, that the section header table file offset is also given.
 It was previously mentioned that the section table resides at the end of
 the file, so after inserting of data at the end of the segment on file, the
-offset must be updated to reflect the new position.
+     Updated: 2019/01/07 19:48:15 by ddinaut          ###   ########.fr         
 
 /* Program segment header.  */
 
@@ -404,7 +404,7 @@ to do so far.
 	* Increase p_shoff to account for the new code in the ELF header
 	* Locate the text segment program header
 		* Increase p_filesz to account for the new code
-		* Increase p_memsz to account for the new code
+		* Increase p_memsz to account for the new codeOD
 	* For each phdr who's segment is after the insertion (text segment)
 		* increase p_offset to reflect the new position after insertion
 	* For each shdr who's section resides after the insertion
@@ -854,7 +854,7 @@ BEYOND ELF PARASITES AND ENTER VIRUS IN UNIX
 
 In a UNIX environment the most probably method for a typical garden variety
 virus to spread is through infecting files that it has legal permission to do
-so.  
+so.
 
 A simple method of locating new files possible to infect, is by scanning the
 current directory for writable files.  This has the advantage of being
@@ -1156,7 +1156,7 @@ This code is easily seen to be jumping to _start, the original host code.
 The parasite code is thus easily removed from program flow by patching the
 entry point to skip the parasite code.
 
-On occasion no section matches the parasite code and hence the entry point. 
+On occasion no section matches the parasite code and hence the entry point.
 objdump will only disassemble sections so thus we cant see the parasite code as
 is.  However, gdb can be used to disassemble manually, and the same method of
 manually finding the host entry point can be used as above.

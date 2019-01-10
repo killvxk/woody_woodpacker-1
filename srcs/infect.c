@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: ddinaut <ddinaut.student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/01/03 20:01:34 by ddinaut           #+#    #+#             */
-/*   Updated: 2019/01/03 20:01:34 by ddinaut          ###   ########.fr       */
+/*   Created: 2019/01/07 17:58:08 by ddinaut           #+#    #+#             */
+/*   Updated: 2019/01/10 15:04:29 by ddinaut          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,6 @@
 
 int main(void)
 {
-	write(1, "coucou\n", 7);
+	write(1, "true program\n", 7);
 	return (0);
 }

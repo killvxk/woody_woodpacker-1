@@ -3,22 +3,20 @@
 
 	;;  hexdump -v -e '"\\""x" 1/1 "%02x" ""' print
 
-	global	_start
-	section _text
-
-_start:
-	jmp _first
-
 _first:
+	jmp 0x0
+	push rax					;baskup register
+	push rdi
+	push rdx
 	call _second				; call permet de mettre l'addresse de str sur la stack
-    db "Hello, World!", 10
+	db "surprise!", 10
 
 _second:
-	mov rax, 0x4
-	mov rbx, 0x1 				; read
-	pop rcx 					; on recup l'addresse de str
-	mov rdi, 0x1				; stdout
-	mov rdx, 0xe				; 14
-	int 0x80					; syscall
-
-	ret
+	pop rsi 					; on recup l'addresse de str
+	mov rax, 0x1					; syscall write
+	mov rdi, 0x1					; arg1 stdout
+	mov rdx, 0xa					; 10
+	syscall
+	pop rdx						;setback register
+	pop rdi
+	pop rax

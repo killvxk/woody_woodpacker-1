@@ -6,7 +6,7 @@
 #    By: ddinaut <marvin@42.fr>                     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/02/26 16:31:33 by ddinaut           #+#    #+#              #
-#    Updated: 2019/01/04 15:09:55 by ddinaut          ###   ########.fr        #
+#    Updated: 2019/01/10 15:58:19 by ddinaut          ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -24,7 +24,6 @@ SRC_DIR		= srcs
 ASM_DIR		= $(SRC_DIR)/asm
 INC_DIR		= includes/
 LIB_PATH	= libft
-OUTPUT_DIR	= bin
 
 LIBFT		= -L $(LIB_PATH)
 LIBS		= $(LIBFT) -lft $(libft)
@@ -45,7 +44,6 @@ END_COL		= \033[0;m
 SRCS =				\
 	packer.c		\
 	packer_core.c	\
-	elf.c			\
 	infection_x32.c	\
 	infection_x64.c	\
 	error.c
@@ -62,22 +60,22 @@ $(OBJ_DIR)/%.o:$(SRC_DIR)/%.c
 	$(CC) -o $@ $(FLAGS) $(ADDFLAGS) $(INCLUDES) -c $<
 
 $(NAME): libft binaries $(OBJ_FILES)
-	$(CC) -o $(OUTPUT_DIR)/$(NAME) $(FLAGS) $(ADDFLAGS) $(OBJ_FILES) $(LIBS)
+	$(CC) -o $(NAME) $(FLAGS) $(ADDFLAGS) $(OBJ_FILES) $(LIBS)
 
 libft:
 	make -C libft/
 
 binaries:
-	gcc $(FLAGS) srcs/infect.c -o $(OUTPUT_DIR)/target
-	nasm -f elf64 $(ASM_DIR)/print.s -o $(ASM_DIR)print.o
-	ld -m elf_x86_64 $(ASM_DIR)/print.o -o $(OUTPUT_DIR)/print
+	gcc $(FLAGS) srcs/infect.c -o target
+#	nasm -f elf64 $(ASM_DIR)/print.s -o $(ASM_DIR)print.o
+#	ld -m elf_x86_64 $(ASM_DIR)/print.o -o $(OUTPUT_DIR)/print
 
 clean:
 	/bin/rm -f $(OBJ_FILES)
-	make -C libft/ clean
+#	make -C libft/ clean
 
 fclean: clean
 	/bin/rm -f $(NAME)
-	make -C libft/ fclean
+#	make -C libft/ fclean
 
 re: fclean all

@@ -6,19 +6,39 @@
 /*   By: ddinaut <ddinaut.student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/03 16:51:51 by ddinaut           #+#    #+#             */
-/*   Updated: 2019/01/03 23:24:56 by ddinaut          ###   ########.fr       */
+/*   Updated: 2019/01/08 13:32:35 by ddinaut          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "packer.h"
 
-int	packer_core(t_packer *pack)
+int		get_arch(t_packer *pack)
 {
+	if ((*((unsigned char*)pack->mapped + EI_MAG0) != ELFMAG0) || \
+		(*((unsigned char*)pack->mapped + EI_MAG1) != ELFMAG1) || \
+		(*((unsigned char*)pack->mapped + EI_MAG2) != ELFMAG2) || \
+		(*((unsigned char*)pack->mapped + EI_MAG3) != ELFMAG3))
+		return (raise_error(ERROR, "target isn't well formated"));
+	if (*((unsigned char*)pack->mapped + EI_CLASS) == ELFCLASS32)
+		return (infect_x32(pack));
+	else if (*((unsigned char*)pack->mapped + EI_CLASS) == ELFCLASS64)
+		return (infect_x64(pack));
+	return (raise_error(ERROR, "unknow architecture, abort"));
+}
+
+int		packer_core(t_packer *pack)
+{
+	int		ret;
     void	*new;
     int		fd;
 
-	get_arch(pack);
-	return (0);
+	ret = get_arch(pack);
+	(void)new;
+	(void)fd;
+	return (ret);
+
+/*
+**** --- CREATE INFECTED BINARY --- *****
 
     fd = open("infected", O_RDWR | O_CREAT, 0777);
 	if (!fd)
@@ -34,4 +54,5 @@ int	packer_core(t_packer *pack)
     munmap(new, pack->filesize);
     close(fd);
     return (0);
+*/
 }

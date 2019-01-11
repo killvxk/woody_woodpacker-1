@@ -6,7 +6,7 @@
 /*   By: ddinaut <ddinaut.student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/04 11:56:51 by ddinaut           #+#    #+#             */
-/*   Updated: 2019/01/11 19:10:14 by ddinaut          ###   ########.fr       */
+/*   Updated: 2019/01/11 21:36:06 by ddinaut          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ static int		modify_section(t_packer *pack, Elf64_Ehdr *e_hdr, t_bdata *bdata)
 static int	create_binary(t_packer *infected, t_packer *pack)
 {
 
-	infected->fd = open("infected", O_RDWR | O_CREAT | O_TRUNC, 0777);
+	infected->fd = open(OUTPUT_NAME, O_RDWR | O_CREAT | O_TRUNC, 0777);
 	if (infected->fd == -1)
 	{
 		perror("fd: ");

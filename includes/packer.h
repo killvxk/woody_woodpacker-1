@@ -6,7 +6,7 @@
 /*   By: ddinaut <ddinaut.student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/04 11:15:26 by ddinaut           #+#    #+#             */
-/*   Updated: 2019/01/11 19:14:17 by ddinaut          ###   ########.fr       */
+/*   Updated: 2019/01/11 23:29:22 by ddinaut          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,10 +30,10 @@
 ** DEFINE
 */
 
-# define SHELLSIZE		46
-# define SHELLSIZE_32	46
+# define SHELLSIZE		48
+# define SHELLSIZE_32	48
 # define PAGESIZE		4096
-# define PAGESIZE_32	2048
+# define OUTPUT_NAME	"woody"
 
 /*
 ** STRUCTURES
@@ -65,7 +65,6 @@ Elf32_Shdr		*next_section_x32(t_packer *pack, Elf32_Ehdr *e_hdr, size_t count);
 Elf64_Shdr		*next_section_x64(t_packer *pack, Elf64_Ehdr *e_hdr, size_t count);
 Elf32_Phdr		*next_segment_x32(t_packer *pack, Elf32_Ehdr *e_hdr, size_t count);
 Elf64_Phdr		*next_segment_x64(t_packer *pack, Elf64_Ehdr *e_hdr, size_t count);
-
 
 uint8_t			*get_shellcode_x64(uint8_t *dst, t_bdata bdata);
 uint8_t			*get_shellcode_x32(uint8_t *dst, t_bdata bdata);

@@ -1,6 +1,6 @@
 #include <stdio.h>
 int main(void)
 {
-	printf ("voucou\n");
+	printf("i'm a x64 binary\n");
 	return (0);
 }

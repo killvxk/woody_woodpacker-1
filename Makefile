@@ -6,17 +6,17 @@
 #    By: ddinaut <marvin@42.fr>                     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/02/26 16:31:33 by ddinaut           #+#    #+#              #
-#    Updated: 2019/01/11 19:22:31 by ddinaut          ###   ########.fr        #
+#    Updated: 2019/01/11 21:37:51 by ddinaut          ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
 # Output file #
-NAME	= packer
+NAME	= woody_woodpacker
 
 # Details #
 CC			= gcc
 FLAGS		= -Wall -Wextra -Werror
-ADDFLAGS	= #-fsanitize=address
+#ADDFLAGS	= -fsanitize=address
 
 # Directories
 OBJ_DIR		= .obj

@@ -53,13 +53,13 @@ dkms.conf
 
 *~
 .obj
-packer
 libft
 to_destroy
 woody
+woody_woodpacker
 .gdb_history
 peda-session*
-bin
-infected
-packer
-srcs/asm
+srcs/asm/print_32
+srcs/asm/print_64
+main/main32
+main/main64

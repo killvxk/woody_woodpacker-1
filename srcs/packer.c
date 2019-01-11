@@ -6,17 +6,16 @@
 /*   By: ddinaut <ddinaut.student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/03 16:52:01 by ddinaut           #+#    #+#             */
-/*   Updated: 2019/01/10 15:13:49 by ddinaut          ###   ########.fr       */
+/*   Updated: 2019/01/11 15:55:07 by ddinaut          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "packer.h"
 
-int		init_struct(t_packer *pack, const char *target)
+int		begin(t_packer *pack, const char *input)
 {
-//	struct stat		st;
-
-	if ((pack->fd = open(target, O_RDWR)) < 0)
+	ft_bzero(pack, sizeof(t_packer));
+	if ((pack->fd = open(input, O_RDONLY)) < 0)
 	{
 		perror("open: ");
 		return (ERROR);
@@ -36,35 +35,44 @@ int		init_struct(t_packer *pack, const char *target)
 	return (SUCCESS);
 }
 
-int		map_target(const char *target)
+int		launching(t_packer *pack)
 {
-	t_packer	pack;
+	if ((*((unsigned char*)pack->mapped + EI_MAG0) != ELFMAG0) || \
+		(*((unsigned char*)pack->mapped + EI_MAG1) != ELFMAG1) || \
+		(*((unsigned char*)pack->mapped + EI_MAG2) != ELFMAG2) || \
+		(*((unsigned char*)pack->mapped + EI_MAG3) != ELFMAG3))
+		return (raise_error(ERROR, "target isn't well formated"));
+	if (*((unsigned char*)pack->mapped + EI_CLASS) == ELFCLASS32)
+		return (infect_x32(pack));
+	else if (*((unsigned char*)pack->mapped + EI_CLASS) == ELFCLASS64)
+		return (infect_x64(pack));
+	return (raise_error(ERROR, "unknow architecture, abort"));
+}
 
-	ft_bzero(&pack, sizeof(pack));
-	if (init_struct(&pack, target) == ERROR)
-		return (ERROR);
-	printf("binary %s is loaded. begin infection\n", target);
-	packer_core(&pack);
-	close(pack.fd);
-	if (munmap(pack.mapped, pack.st.st_size) == -1)
-	{
+int		ending(t_packer *pack)
+{
+	int ret;
+
+	ret = SUCCESS;
+	if ((ret = close(pack->fd)) == -1)
+		perror("close: ");
+	if ((ret = munmap(pack->mapped, pack->st.st_size)) == -1)
 		perror("munmap: ");
-		return (ERROR);
-	}
-	return (SUCCESS);
+	return (ret);
 }
 
 int		main(int ac, char **av)
 {
-    if (ac < 2)
-    {
-		printf("Missing argument. usage : %s [target ...]\n", *av);
-		return (-1);
-    }
-    while (++av && (*av) != NULL)
-    {
-		if (map_target(*av) == -1)
-			return (ERROR);
-    }
-    return (SUCCESS);
+	t_packer pack;
+
+	if (ac == 2)
+	{
+		begin(&pack, av[1]);
+		launching(&pack);
+		ending(&pack);
+		return (SUCCESS);
+	}
+	else
+		printf("Wrong argument number.\n\tUsage : %s <target>\n", *av);
+	return (ERROR);
 }

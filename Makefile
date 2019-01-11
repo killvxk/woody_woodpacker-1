@@ -6,7 +6,7 @@
 #    By: ddinaut <marvin@42.fr>                     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/02/26 16:31:33 by ddinaut           #+#    #+#              #
-#    Updated: 2019/01/10 15:58:19 by ddinaut          ###   ########.fr        #
+#    Updated: 2019/01/11 19:22:31 by ddinaut          ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -43,7 +43,9 @@ END_COL		= \033[0;m
 # Sources #
 SRCS =				\
 	packer.c		\
-	packer_core.c	\
+	elf_section.c	\
+	elf_segment.c	\
+	shellcode.c		\
 	infection_x32.c	\
 	infection_x64.c	\
 	error.c
@@ -59,14 +61,15 @@ $(OBJ_DIR)/%.o:$(SRC_DIR)/%.c
 	mkdir -p $(dir $@)
 	$(CC) -o $@ $(FLAGS) $(ADDFLAGS) $(INCLUDES) -c $<
 
-$(NAME): libft binaries $(OBJ_FILES)
+$(NAME): libft $(OBJ_FILES)
 	$(CC) -o $(NAME) $(FLAGS) $(ADDFLAGS) $(OBJ_FILES) $(LIBS)
 
 libft:
 	make -C libft/
 
 binaries:
-	gcc $(FLAGS) srcs/infect.c -o target
+	gcc $(FLAGS) srcs/infect.c -o target_pie
+	gcc $(FLAGS) -no-pie srcs/infect.c -o target_npie
 #	nasm -f elf64 $(ASM_DIR)/print.s -o $(ASM_DIR)print.o
 #	ld -m elf_x86_64 $(ASM_DIR)/print.o -o $(OUTPUT_DIR)/print
 

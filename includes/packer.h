@@ -6,7 +6,7 @@
 /*   By: ddinaut <ddinaut.student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/04 11:15:26 by ddinaut           #+#    #+#             */
-/*   Updated: 2019/01/10 18:05:09 by ddinaut          ###   ########.fr       */
+/*   Updated: 2019/01/11 19:14:17 by ddinaut          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,33 +26,48 @@
 # define SUCCESS 0
 # define ERROR -1
 
+/*
+** DEFINE
+*/
+
+# define SHELLSIZE		46
+# define SHELLSIZE_32	46
+# define PAGESIZE		4096
+# define PAGESIZE_32	2048
+
+/*
+** STRUCTURES
+*/
 typedef struct		s_packer
 {
 	int				fd;
 	char			*mapped;
+	void			*end;
 	struct stat		st;
 }					t_packer;
 
 typedef struct		s_bdata
 {
-	uint64_t		p_vaddr;
-	uint64_t	old_entry;
+	unsigned int	p_vaddr;
+	unsigned int	end_of_text;
+	unsigned int	old_entry;
 }					t_bdata;
 
-
+/*
+** FUNCTIONS
+*/
 int				packer(int ac, char **av);
-int				packer_core(t_packer *pack);
 int				raise_error(int ret, const char *error);
-
 int				infect_x32(t_packer *pack);
 int				infect_x64(t_packer *pack);
 
-/*
-** elf funcs
-*/
-int				check_elf_header(void *mapped);
-Elf64_Shdr		*get_elf_section(Elf64_Ehdr *hdr);
-Elf64_Shdr		*get_elf_section_id(Elf64_Ehdr *hdr, int id);
-char    *elf_str_table(Elf64_Ehdr *hdr);
+Elf32_Shdr		*next_section_x32(t_packer *pack, Elf32_Ehdr *e_hdr, size_t count);
+Elf64_Shdr		*next_section_x64(t_packer *pack, Elf64_Ehdr *e_hdr, size_t count);
+Elf32_Phdr		*next_segment_x32(t_packer *pack, Elf32_Ehdr *e_hdr, size_t count);
+Elf64_Phdr		*next_segment_x64(t_packer *pack, Elf64_Ehdr *e_hdr, size_t count);
+
+
+uint8_t			*get_shellcode_x64(uint8_t *dst, t_bdata bdata);
+uint8_t			*get_shellcode_x32(uint8_t *dst, t_bdata bdata);
 
 #endif

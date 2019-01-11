@@ -60,3 +60,6 @@ woody
 .gdb_history
 peda-session*
 bin
+infected
+packer
+srcs/asm

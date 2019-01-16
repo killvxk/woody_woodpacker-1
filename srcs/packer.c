@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   packer.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ddinaut <ddinaut.student.42.fr>            +#+  +:+       +#+        */
+/*   By: ddinaut <ddinaut@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/03 16:52:01 by ddinaut           #+#    #+#             */
-/*   Updated: 2019/01/11 21:35:10 by ddinaut          ###   ########.fr       */
+/*   Updated: 2019/01/14 12:22:04 by ddinaut          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "packer.h"
 
-static int	begin(t_packer *pack, const char *input)
+static void	begin(t_packer *pack, const char *input)
 {
 	ft_bzero(pack, sizeof(t_packer));
 	if ((pack->fd = open(input, O_RDONLY)) < 0)
@@ -32,7 +32,6 @@ static int	begin(t_packer *pack, const char *input)
 		close(pack->fd);
 		exit(ERROR);
 	}
-	return (SUCCESS);
 }
 
 static int	launching(t_packer *pack)
@@ -41,7 +40,7 @@ static int	launching(t_packer *pack)
 		(*((unsigned char*)pack->mapped + EI_MAG1) != ELFMAG1) || \
 		(*((unsigned char*)pack->mapped + EI_MAG2) != ELFMAG2) || \
 		(*((unsigned char*)pack->mapped + EI_MAG3) != ELFMAG3))
-		return (raise_error(ERROR, "target isn't well formated"));
+		return (raise_error(ERROR, "input file isn't well formated"));
 	if (*((unsigned char*)pack->mapped + EI_CLASS) == ELFCLASS32)
 		return (infect_x32(pack));
 	else if (*((unsigned char*)pack->mapped + EI_CLASS) == ELFCLASS64)

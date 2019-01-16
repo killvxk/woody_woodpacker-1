@@ -1,0 +1,51 @@
+;******************************************************************************;
+;                                                                              ;
+;                                                         :::      ::::::::    ;
+;    print_64.s                                         :+:      :+:    :+:    ;
+;                                                     +:+ +:+         +:+      ;
+;    By: ddinaut <ddinaut@student.42.fr>            +#+  +:+       +#+         ;
+;                                                 +#+#+#+#+#+   +#+            ;
+;    Created: 2019/01/12 14:58:15 by ddinaut           #+#    #+#              ;
+;    Updated: 2019/01/14 11:58:04 by ddinaut          ###   ########.fr        ;
+;                                                                              ;
+;******************************************************************************;
+
+
+_start:
+	push rax					; backup register
+	push rbx
+	push rcx
+	push rdx
+	push rsi
+	call _decrypt
+	db "0123456789abcdef", 0
+
+_decrypt:
+	lea rbx, [ 0xaaaaaa ]		; p_vaddr section addr
+	lea rcx, [ 0xbbbbbb ]		; end_text section addr
+	pop rdx  					; decrypt key
+
+_loop:
+	cmp rbx, rcx
+	je 0xcacbcccd
+	mov al, byte[rdx]
+	mov byte[rdx], al
+	inc rdx
+	jmp _loop
+
+_first:
+	call _second
+	db "....WOODY....", 10
+
+_second:
+	pop rsi
+	mov rax, 0x1
+	mov rdi, 0x1
+	mov rdx, 0xe
+	syscall						; write
+	pop rsi						; setback register
+	pop rdx
+	pop rcx
+	pop rbx
+	pop rax
+	jmp 0xcafebabe

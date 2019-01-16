@@ -6,7 +6,7 @@
 #    By: ddinaut <marvin@42.fr>                     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/02/26 16:31:33 by ddinaut           #+#    #+#              #
-#    Updated: 2019/01/11 21:37:51 by ddinaut          ###   ########.fr        #
+#    Updated: 2019/01/12 11:27:38 by ddinaut          ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -45,9 +45,10 @@ SRCS =				\
 	packer.c		\
 	elf_section.c	\
 	elf_segment.c	\
-	shellcode.c		\
 	infection_x32.c	\
 	infection_x64.c	\
+	shellcode.c		\
+	text_encrypt.c	\
 	error.c
 
 OBJ_FILES = $(SRC_FILES:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)

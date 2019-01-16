@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   shellcode.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ddinaut <ddinaut.student.42.fr>            +#+  +:+       +#+        */
+/*   By: ddinaut <ddinaut@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/11 17:50:52 by ddinaut           #+#    #+#             */
-/*   Updated: 2019/01/11 23:25:39 by ddinaut          ###   ########.fr       */
+/*   Updated: 2019/01/16 12:23:15 by ddinaut          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,25 @@
 
 uint8_t shellcode_x64[] =
 {
+	// size : 48
+	/* v1
 	0xe8, 0x0e, 0x00, 0x00, 0x00, 0x2e, 0x2e, 0x2e,
 	0x2e, 0x57, 0x4f, 0x4f, 0x44, 0x59, 0x2e, 0x2e,
 	0x2e, 0x2e, 0x0a, 0x5e, 0x50, 0x57, 0x52, 0xb8,
 	0x01, 0x00, 0x00, 0x00, 0xbf, 0x01, 0x00, 0x00,
 	0x00, 0xba, 0x0e, 0x00, 0x00, 0x00, 0x0f, 0x05,
 	0x5a, 0x5f, 0x58, 0xe9, 0xfc, 0xff, 0xff, 0xff
+	*/
+
+   	0x57, 0x56, 0x52, 0x41, 0x50, 0x41, 0x51, 0xe8, 0x0c, 0x00,
+	0x00, 0x00, 0x2e, 0x2e, 0x2e, 0x57, 0x4f, 0x4f, 0x44, 0x59,
+	0x2e, 0x2e, 0x2e, 0x0a, 0xbf, 0x01, 0x00, 0x00, 0x00, 0x5e,
+	0xba, 0x0c, 0x00, 0x00, 0x00, 0xb8, 0x01, 0x00, 0x00, 0x00,
+	0x0f, 0x05, 0x4d, 0x31, 0xc0, 0x4d, 0x31, 0xc9, 0x4c, 0x8d,
+	0x05, 0x07, 0x00, 0x00, 0x4c, 0x8d, 0x0d, 0x00, 0x00, 0x00, // 60 && 67
+	0x4d, 0x39, 0xc8, 0x74, 0x05, 0x49, 0xff, 0xc0, 0xeb, 0xf6,
+	0x41, 0x59, 0x41, 0x58, 0x5a, 0x5e, 0x5f, 0xe9, 0xba, 0xba,
+	0xfe, 0xca
 };
 
 uint8_t shellcode_x32[] =
@@ -32,7 +45,21 @@ uint8_t shellcode_x32[] =
 	0x5a, 0x58, 0x5b, 0xe9, 0xd0, 0x6f, 0xfb, 0xf7
 };
 
-static void	modify_payload(uint8_t *shellcode, int shellsize, unsigned int old_entry, unsigned int new_entry)
+unsigned int	get_payload_size64(void)
+{
+	/*
+	unsigned int size;
+	unsigned int ps;
+
+	size = sizeof(shellcode_64);
+	ps = getpagesize();
+	while (size < ps)
+		size++;
+	*/
+	return (sizeof(shellcode_x64));
+}
+
+void	modify_payload(uint8_t *shellcode, int shellsize, unsigned int old_entry, unsigned int new_entry)
 {
 	int addr;
 
@@ -42,7 +69,24 @@ static void	modify_payload(uint8_t *shellcode, int shellsize, unsigned int old_e
 
 uint8_t	*get_shellcode_x64(uint8_t *dst, t_bdata bdata)
 {
-	modify_payload(shellcode_x64, SHELLSIZE, bdata.old_entry, bdata.p_vaddr);
+	unsigned long addr;
+
+
+	/* insert addr to decrypt */
+	addr = bdata.s_offset;
+	printf("\t\tbegin:\t0x%lx\n", addr);
+	memcpy(&shellcode_x64[60], &addr, sizeof(int));
+
+	/* insert addr new entrypoint*/
+	addr = bdata.payload_entrypoint;
+	printf("\t\tend:\t0x%lx\n", addr);
+	memcpy(&shellcode_x64[68], &addr, sizeof(int));
+
+	/* od entry */
+ 	addr = bdata.original_entrypoint - bdata.p_vaddr - bdata.payload_size;
+	printf("\t\toriginal_entrypoint:\t0x%lx\n", addr);
+	memcpy(&shellcode_x64[SHELLSIZE - 4], &addr, sizeof(int));
+
 	for (int i = 0 ; i < SHELLSIZE ; i++)
 		dst[i] = shellcode_x64[i];
 	return (dst);
@@ -50,7 +94,8 @@ uint8_t	*get_shellcode_x64(uint8_t *dst, t_bdata bdata)
 
 uint8_t	*get_shellcode_x32(uint8_t *dst, t_bdata bdata)
 {
-	modify_payload(shellcode_x32, SHELLSIZE, bdata.old_entry, bdata.p_vaddr);
+	modify_payload(shellcode_x32, SHELLSIZE, bdata.old_entry, bdata.p_vaddr2);
+	(void)bdata;
 	for (int i = 0 ; i < SHELLSIZE ; i++)
 		dst[i] = shellcode_x32[i];
 	return (dst);

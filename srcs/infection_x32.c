@@ -6,7 +6,7 @@
 /*   By: ddinaut <ddinaut.student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/04 11:56:51 by ddinaut           #+#    #+#             */
-/*   Updated: 2019/01/11 23:29:15 by ddinaut          ###   ########.fr       */
+/*   Updated: 2019/01/20 19:32:52 by ddinaut          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ static int		create_binary(t_packer *infected, t_packer *pack)
 		perror("fd: ");
 		return (ERROR);
 	}
-	if ((infected->mapped = mmap(NULL, pack->st.st_size + PAGESIZE, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE | MAP_SHARED, infected->fd, 0)) == MAP_FAILED)
+	if ((infected->map = mmap(NULL, pack->size + PAGESIZE, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE | MAP_SHARED, infected->fd, 0)) == MAP_FAILED)
 	{
 		perror("mmap: ");
 		close(infected->fd);
@@ -81,9 +81,9 @@ static void	insert_data(t_packer *pack, t_packer infected, t_bdata bdata)
 	uint8_t fake_page[PAGESIZE] = {0};
 
 	get_shellcode_x32(fake_page, bdata);
-	write(infected.fd, pack->mapped, bdata.end_of_text);
+	write(infected.fd, pack->map, bdata.end_of_text);
 	write(infected.fd, fake_page, 4096);
-	write(infected.fd, &pack->mapped[bdata.end_of_text], pack->st.st_size - bdata.end_of_text);
+	write(infected.fd, &pack->map[bdata.end_of_text], pack->size - bdata.end_of_text);
 }
 
 int		infect_x32(t_packer *pack)
@@ -94,7 +94,7 @@ int		infect_x32(t_packer *pack)
 	Elf32_Ehdr	*e_hdr;
 
 	ret = ERROR;
-	e_hdr = (Elf32_Ehdr*)pack->mapped;
+	e_hdr = (Elf32_Ehdr*)pack->map;
 	if (create_binary(&infected, pack) == SUCCESS)
 		if (modify_segment(pack, e_hdr, &bdata) == SUCCESS)
 			if (modify_section(pack, e_hdr, &bdata) == SUCCESS)
@@ -104,6 +104,6 @@ int		infect_x32(t_packer *pack)
 				ret = SUCCESS;
 			}
 	close(infected.fd);
-	munmap(infected.mapped, infected.st.st_size + PAGESIZE);
+	munmap(infected.map, infected.size + PAGESIZE);
 	return (ret);
 }

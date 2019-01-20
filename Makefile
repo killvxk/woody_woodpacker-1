@@ -6,7 +6,7 @@
 #    By: ddinaut <marvin@42.fr>                     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/02/26 16:31:33 by ddinaut           #+#    #+#              #
-#    Updated: 2019/01/11 21:37:51 by ddinaut          ###   ########.fr        #
+#    Updated: 2019/01/20 20:52:55 by ddinaut          ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -23,11 +23,9 @@ OBJ_DIR		= .obj
 SRC_DIR		= srcs
 ASM_DIR		= $(SRC_DIR)/asm
 INC_DIR		= includes/
-LIB_PATH	= libft
+LIB_PATH	=
 
-LIBFT		= -L $(LIB_PATH)
-LIBS		= $(LIBFT) -lft $(libft)
-INCLUDES	= -I $(LIB_PATH)/$(INC_DIR) -I $(INC_DIR)
+INCLUDES	= -I $(INC_DIR)
 
 # Colors #
 COL_BLACK	= \033[1;30m
@@ -47,13 +45,15 @@ SRCS =				\
 	elf_segment.c	\
 	shellcode.c		\
 	infection_x32.c	\
-	infection_x64.c	\
-	error.c
+	infection_x64.c \
+	misc.c
+
 
 OBJ_FILES = $(SRC_FILES:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 SRC_FILES = $(addprefix $(SRC_DIR)/,$(SRCS))
+
 # Rules #
-.PHONY: all clean fclean re libft
+.PHONY: all clean fclean re
 
 all: $(NAME)
 
@@ -61,11 +61,8 @@ $(OBJ_DIR)/%.o:$(SRC_DIR)/%.c
 	mkdir -p $(dir $@)
 	$(CC) -o $@ $(FLAGS) $(ADDFLAGS) $(INCLUDES) -c $<
 
-$(NAME): libft $(OBJ_FILES)
+$(NAME): $(OBJ_FILES)
 	$(CC) -o $(NAME) $(FLAGS) $(ADDFLAGS) $(OBJ_FILES) $(LIBS)
-
-libft:
-	make -C libft/
 
 binaries:
 	gcc $(FLAGS) srcs/infect.c -o target_pie
@@ -75,10 +72,9 @@ binaries:
 
 clean:
 	/bin/rm -f $(OBJ_FILES)
-#	make -C libft/ clean
+	/bin/rm -f $(NAME)
 
 fclean: clean
 	/bin/rm -f $(NAME)
-#	make -C libft/ fclean
 
 re: fclean all
